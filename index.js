@@ -21,32 +21,44 @@ async function run() {
     const newTodoCollection = client.db('Todo_app').collection('newTodo');
 
     app.get('/items', async (req, res) => {
-        const query = {};
-        const cursor = todosCollection.find(query);
-        const products = (await cursor.toArray());
-        res.send(products)
-      });
+      const query = {};
+      const cursor = todosCollection.find(query);
+      const products = (await cursor.toArray());
+      res.send(products)
+    });
 
-      app.post('/newTodo', async (req, res) => {
-        const newTodo = req.body;
-        const result = await newTodoCollection.insertOne(newTodo)
-        res.send({ success: true, message: "added ", result });
-      })
-    
+    app.post('/newTodo', async (req, res) => {
+      const newTodo = req.body;
+      const result = await newTodoCollection.insertOne(newTodo)
+      res.send({ success: true, message: "added ", result });
+    })
 
-      app.get('/todoDetails', async (req, res) => {
-        const query = {}
-        const result = await newTodoCollection.find(query).toArray()
-        res.send(result)
-      }
-      );
 
-      app.delete('/items/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await newTodoCollection.deleteOne(query);
-        res.send(result);
-      })
+    app.get('/todoDetails', async (req, res) => {
+      const query = {}
+      const result = await newTodoCollection.find(query).toArray()
+      res.send(result)
+    }
+    );
+
+    app.delete('/items/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await newTodoCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put('/updateTodo/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateTodo = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: updateTodo,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send({ success: true, result });
+    })
 
   }
   finally {
